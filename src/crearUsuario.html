@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Crear Usuario</title>
+  <link rel="stylesheet" href="/src/style/styleNewUser.css" />
+</head>
+<body>
+  <header class="matamonchis-header">
+    <a href="mainMatamonchis.html" class="logo-link">
+      <img src="/src/Logo/LogoBW.png" alt="Matamonchis Logo" class="logo-img" />
+    </a>
+  </header>
+
+  <main class="usuario-container">
+    <h1>Crear Nuevo Usuario</h1>
+    <form id="crear-usuario-form" class="formulario" >
+      <input type="text" id="nombre" placeholder="Nombre completo" required />
+      <input type="email" id="correo" placeholder="Correo electrónico" required />
+      <input type="text" id="username" autocomplete="off" placeholder="Nombre de usuario" required />
+      <input type="password" id="password" autocomplete="off" placeholder="Contraseña" required />
+      <input type="password" id="confirm-password" autocomplete="off" placeholder="Repita contraseña" required />
+
+      <select id="rol" required>
+        <option value="admin">Administrador</option>
+        <option value="cajero">Cajero</option>
+      </select>
+      <button type="submit" class="btn btn-crear">Crear Usuario</button>
+    </form>
+    <p id="mensaje" class="mensaje-usuario"></p>
+  </main>
+
+  <script type="module" src="/src/crearUsuario.js"></script>
+</body>
+</html>
