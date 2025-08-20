@@ -1,0 +1,60 @@
+# azure-pipelines-frontend.yml
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  node_version: '20.x'                 # o 18.x
+  app_location: '/'                    # carpeta del frontend (raíz si el package.json está en la raíz)
+  output_location: 'dist'              # carpeta que genera Vite
+  swa_name: 'matamonchis-front'        # <-- nombre del recurso Static Web App
+  azureSubscription: 'Nombre-Service-Connection'   # <-- AJUSTA
+
+stages:
+- stage: Build
+  displayName: Build Frontend
+  pool:
+    vmImage: 'ubuntu-latest'
+  jobs:
+  - job: build
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '$(node_version)'
+      displayName: 'Use Node $(node_version)'
+
+    - script: |
+        cd $(app_location)
+        npm ci
+        npm run build
+      displayName: 'npm ci & build'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish dist'
+      inputs:
+        PathtoPublish: '$(app_location)$(output_location)'
+        ArtifactName: 'frontend'
+        publishLocation: 'Container'
+
+- stage: Deploy
+  displayName: Deploy to Azure Static Web App
+  dependsOn: Build
+  jobs:
+  - job: deploy
+    steps:
+    - download: current
+      artifact: frontend
+
+    # Requiere instalar la extensión "Azure Static Web Apps" en tu proyecto de DevOps
+    - task: AzureStaticWebApp@0
+      displayName: 'Deploy SWA'
+      inputs:
+        azure_static_web_apps_api_token: ''   # déjalo vacío si usas service connection
+        app_location: '.'                     # no importa, usamos artifact package
+        output_location: '$(Pipeline.Workspace)/frontend'
+        azureSubscription: '$(azureSubscription)'
+        app_build_command: ''                 # build ya se hizo
+        skip_app_build: true
+        sku: 'Free'
+        app_name: '$(swa_name)'
